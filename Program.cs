@@ -1,2 +1,3 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+﻿using UNO_Projekt.CardClasses;
+
+SpecialCard card = new SpecialCard(Types.PlusFour, Colors.Yellow);
