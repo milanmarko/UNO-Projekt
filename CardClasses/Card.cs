@@ -10,15 +10,14 @@ namespace UNO_Projekt.CardClasses
     internal class Card
     {
         protected ConsoleColor Color_;
-        private byte Value;
+        private int Value;
 
         public Card(ConsoleColor color)
         {
             Color_ = color;
         }
-        public Card(ConsoleColor color, byte value)
+        public Card(ConsoleColor color, int value):this(color)
         {
-            Color_ = color;
             Value = value;
         }
 

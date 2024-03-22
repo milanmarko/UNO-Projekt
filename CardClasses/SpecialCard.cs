@@ -9,12 +9,12 @@ namespace UNO_Projekt.CardClasses
 {
     public enum Types
     {
-        PlusTwo, PlusFour, Reverse, Block
+        PlusTwo = 0, PlusFour = 1, Reverse = 2, Block = 3, ColorChanger = 4,
     }
     internal class SpecialCard : Card
     {
         private Types Type;
-        public SpecialCard(Types type, ConsoleColor color)
+        public SpecialCard(ConsoleColor color, Types type):base(color)
         {
 
             Type = type;
