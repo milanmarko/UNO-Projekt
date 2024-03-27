@@ -21,9 +21,9 @@ namespace UNO_Projekt.CardClasses
             Color_ = color;
         }
 
-        public override Card PlayCard()
+        public override Card? PlayCard()
         {
-
+            return null;
         }
     }
 }
