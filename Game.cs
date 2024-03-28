@@ -17,12 +17,14 @@ namespace UNO_Projekt
         private static Random r = new Random();
         private List<Card> PlayerDeck;
         private List<Card> AIDeck;
+        private static List<Card> Possible;
+        private static List<Card> Available;
         public static List<Card> GameDeck;
         public static List<Card>? onTable;
         public Game(int startCardCount)
         {
             StartCardCount = startCardCount;
-            FillGameDeck();
+            GameLoop();
         }
 
         private void FillGameDeck()
@@ -51,40 +53,83 @@ namespace UNO_Projekt
                     GameDeck.Add(new SpecialCard(ConsoleColor.Black, type));
                 }
             }
+            foreach (var item in GameDeck)
+            {
+                Available.Add(item);
+            }
         }
 
         private void StartGame()
         {
-            Console.WriteLine("UNO");
-            do
-            {
-                Console.WriteLine("Kérem adja meg mennyi lappal szeretné kezdeni a játékot");
-            }
-            while (!int.TryParse(Console.ReadLine(), out StartCardCount));
+            Shuffler.Shuffle(Available);
             PlayerDeck = GetCards(PlayerDeck);
             AIDeck = GetCards(AIDeck);
-            onTable.Add(GameDeck.First());
-            GameDeck.RemoveAt(0);
+            onTable.Add(Available.First());
+            Available.RemoveAt(0);
             //Kene vmi ellenorzes hogy ne lehessen +4 az 1. lap
           
         }
-        private static List<Card> GetCards(List<Card> a)
+        private List<Card> GetCards(List<Card> a)
         {
-            a = new List<Card>();
-            GameDeck = GameDeck.OrderBy(_ => r.Next()).ToList();
+            a = new List<Card>(); // Initialize a new list
             for (int i = 0; i < StartCardCount; i++)
-            { 
-                a.Add(GameDeck.First());
-                GameDeck.RemoveAt(0);
+            {
+                a.Add(Available.First());
+                Available.RemoveAt(0);
             }
             return a;
         }
         public static Card DrawCard()
         {
-            Card drawn = GameDeck.First();
-            GameDeck.RemoveAt(0);
+            Card drawn = Available.First();
+            Available.RemoveAt(0);
             return drawn;
         }
-
+        private bool isPlayableOnHand(List<Card> a)
+        {
+            if (possibleMoves().Intersect(a).ToList().Count() == 0) return false;
+            return true;
+        }
+        private List<Card> possibleMoves()
+        {
+            return Available.Where(x => x.Value == onTable.Last().Value || x.Color_ == onTable.Last().Color_ || x.Color_ == ConsoleColor.Black).ToList();
+        }
+        private Card? PlayerChoice()
+        {
+            string cards = "";
+            int i = 1;
+            string a = "";
+            foreach (var card in PlayerDeck)
+            {
+                cards += card.Value + card.Color_+ i+ ", ";
+            }
+            cards.Remove(cards.Length - 2);
+            Console.WriteLine(cards);
+            if (isPlayableOnHand(PlayerDeck))
+            {
+                do
+                {
+                    a = Console.ReadLine();
+                }
+                while (int.TryParse(a, out i) && i < PlayerDeck.Count() && i >= 0 && possibleMoves().Contains(PlayerDeck[i]));
+                if (i != 0)
+                {
+                    return PlayerDeck[i];
+                }
+            }
+            return null;
+        }
+        private void PlayerTurn()
+        { 
+            Card playedCard = PlayerChoice();
+        }
+        private coid aiturn();
+        private void GameLoop()
+        {
+            FillGameDeck();
+            StartGame();
+            PlayerTurn();
+            aiturn()
+        }
     }
 }

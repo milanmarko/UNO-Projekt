@@ -28,17 +28,13 @@ namespace UNO_Projekt
                 {
                     Console.WriteLine("UNO");
                 }
-                if (playing.Color_ == ConsoleColor.Black) 
-                {
-                    ColorMax();
-                }
                 deck.Remove(playing);
                 return playing;
             }
             deck.Add(Game.DrawCard());
             return null;
         }
-        private ConsoleColor ColorMax()
+        public ConsoleColor ColorMax()
         {
             Dictionary<ConsoleColor, int> Colors = new Dictionary<ConsoleColor, int>()
             { [ConsoleColor.Blue] = 0, [ConsoleColor.Red] = 0, [ConsoleColor.Yellow] = 0, [ConsoleColor.Green] = 0};
