@@ -21,7 +21,7 @@ namespace UNO_Projekt
         public Card? PlayRound()
         {
             List<Card>possible = deck.Where(x => x.Value == TopCard.Value).ToList();
-            possible.AddRange(deck.Where(x => x.Color_ == TopCard.Color_).ToList());
+            possible.AddRange(deck.Where(x => x.Color_ == TopCard.Color_|| x.Color_ == ConsoleColor.Black).ToList());
             if (possible != null)
             {
                 Card playing = possible[r.Next(possible.Count)];
