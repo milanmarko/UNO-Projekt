@@ -9,8 +9,8 @@ namespace UNO_Projekt.CardClasses
 {
     internal class Card
     {
-        protected ConsoleColor Color_;
-        private int Value;
+        public ConsoleColor Color_;
+        public int Value;
 
         public Card(ConsoleColor color)
         {

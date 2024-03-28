@@ -15,11 +15,10 @@ namespace UNO_Projekt
         private int AICount;
         private int StartCardCount;
         private static Random r = new Random();
-        private List<Card>[] PlayerDeck;
-        private List<Card>[] AIDeck;
-        private List<Card> GameDeck;
-        private List<Card> onTable;
-
+        private List<Card> PlayerDeck;
+        private List<Card> AIDeck;
+        public static List<Card> GameDeck;
+        public static List<Card>? onTable;
         public Game(int startCardCount)
         {
             StartCardCount = startCardCount;
@@ -56,17 +55,23 @@ namespace UNO_Projekt
 
         private void StartGame()
         {
-            for (int i = 0; i < PlayerCount; i++)
-                PlayerDeck[i] = GetCards(PlayerDeck[i]);
-            for (int i = 0; i < AICount; i++)
-                AIDeck[i] = GetCards(AIDeck[i]);
+            Console.WriteLine("UNO");
+            do
+            {
+                Console.WriteLine("Kérem adja meg mennyi lappal szeretné kezdeni a játékot");
+            }
+            while (!int.TryParse(Console.ReadLine(), out StartCardCount));
+            PlayerDeck = GetCards(PlayerDeck);
+            AIDeck = GetCards(AIDeck);
             onTable.Add(GameDeck.First());
             GameDeck.RemoveAt(0);
+            //Kene vmi ellenorzes hogy ne lehessen +4 az 1. lap
+          
         }
-        private List<Card> GetCards(List<Card> a)
+        private static List<Card> GetCards(List<Card> a)
         {
             a = new List<Card>();
-            this.GameDeck = this.GameDeck.OrderBy(_ => r.Next()).ToList();
+            GameDeck = GameDeck.OrderBy(_ => r.Next()).ToList();
             for (int i = 0; i < StartCardCount; i++)
             { 
                 a.Add(GameDeck.First());
@@ -74,7 +79,12 @@ namespace UNO_Projekt
             }
             return a;
         }
-
+        public static Card DrawCard()
+        {
+            Card drawn = GameDeck.First();
+            GameDeck.RemoveAt(0);
+            return drawn;
+        }
 
     }
 }

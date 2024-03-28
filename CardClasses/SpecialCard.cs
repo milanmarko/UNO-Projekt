@@ -13,7 +13,7 @@ namespace UNO_Projekt.CardClasses
     }
     internal class SpecialCard : Card
     {
-        private Types Type;
+        public Types Type;
         public SpecialCard(ConsoleColor color, Types type):base(color)
         {
 
