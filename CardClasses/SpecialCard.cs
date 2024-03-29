@@ -13,8 +13,9 @@ namespace UNO_Projekt.CardClasses
     }
     internal class SpecialCard : Card
     {
+        public static string[] SpecialCardTypes = new string[] { "+2", "+4", "Fordító", "Blokkoló", "Színkérő" };
         public Types Type;
-        public SpecialCard(ConsoleColor color, Types type):base(color)
+        public SpecialCard(ConsoleColor color, Types type):base(color, null)
         {
 
             Type = type;
@@ -24,6 +25,10 @@ namespace UNO_Projekt.CardClasses
         public override Card? PlayCard()
         {
             return null;
+        }
+        public override string ToString()
+        {
+            return SpecialCardTypes[(int)Type];
         }
     }
 }

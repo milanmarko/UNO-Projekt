@@ -9,6 +9,10 @@ using UNO_Projekt.CardClasses;
 
 namespace UNO_Projekt
 {
+    public enum Player
+    {
+        AI, Player
+    }
     internal class Game
     {
         private int PlayerCount;
@@ -18,19 +22,19 @@ namespace UNO_Projekt
         private List<Card> PlayerDeck;
         private List<Card> AIDeck;
         private static List<Card> Possible;
-        private static List<Card> Available;
-        public static List<Card> GameDeck;
-        public static List<Card>? onTable;
-        ai AI;
+        private static List<Card> Available = new List<Card>();
+        public static List<Card> GameDeck = new List<Card>();
+        public static List<Card> onTable = new List<Card>();
         public Game(int startCardCount)
         {
+            Console.BackgroundColor = ConsoleColor.Gray;
             StartCardCount = startCardCount;
             GameLoop();
         }
 
         private void FillGameDeck()
         {
-            GameDeck = new List<Card>();
+            // Ezt még majd át kell nézni mert elég goofy
             ConsoleColor[] __colors = new ConsoleColor[] { ConsoleColor.Red, ConsoleColor.Blue, ConsoleColor.Yellow, ConsoleColor.Green };
             for (int i = 0; i < 10; i++)
             {
@@ -95,54 +99,89 @@ namespace UNO_Projekt
         {
             return Available.Where(x => x.Value == onTable.Last().Value || x.Color_ == onTable.Last().Color_ || x.Color_ == ConsoleColor.Black).ToList();
         }
+        private bool isSelectedCardPlayable(Card card)
+        {
+            return (card.Color_ == onTable.Last().Color_ || card.ToString() == onTable.Last().ToString() || card.Color_ == ConsoleColor.Black);
+        }
         private Card? PlayerChoice()
         {
-            string cards = "";
-            int i = 1;
-            string a = "";
-            foreach (var card in PlayerDeck)
+            //Console.WriteLine($"DEBUG");
+            //foreach (Card card in PlayerDeck)
+            //{
+            //    Console.Write(card);
+            //}
+            Console.ForegroundColor = onTable.Last().Color_;
+            Console.Write($"\n{onTable.Last()}");
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write("-ra raksz\n");
+            if (PlayerDeck.Where(x => isSelectedCardPlayable(x)).Count() > 0)
             {
-                cards += card.Value + card.Color_ + i + ", ";
-            }
-            cards.Remove(cards.Length - 2);
-            Console.WriteLine(cards);
-            if (isPlayableOnHand(PlayerDeck))
-            {
+                foreach (Card card in PlayerDeck)
+                {
+                    Console.ForegroundColor = card.Color_;
+                    Console.Write($"{card}, ");
+                }
+                Console.ForegroundColor = ConsoleColor.Black;
+                Console.WriteLine("\nÍrd be annak a lapnak a sorszámát, amit le szeretnél rakni!");
+                int uInput;
                 do
                 {
-                    a = Console.ReadLine();
-                }
-                while (int.TryParse(a, out i) && i < PlayerDeck.Count() && i >= 0 && possibleMoves().Contains(PlayerDeck[i]));
-                if (i != 0)
-                {
-                    return PlayerDeck[i];
-                }
+                    int.TryParse(Console.ReadLine(), out uInput);
+                } while (uInput > 0 && uInput < PlayerDeck.Count + 1 && !isSelectedCardPlayable(PlayerDeck[uInput - 1]));
+                Console.WriteLine(uInput);
+                return PlayerDeck[uInput-1];
+            }
+            else
+                return null;
+
+        }
+
+        private Card? Turn(Player player)
+        {
+            Card? playedCard = Ai.PlayRound(AIDeck);
+            List<Card> deck = AIDeck;
+            if (player == Player.Player)
+            {
+                playedCard = PlayerChoice();
+                deck = PlayerDeck;
+            }
+            if (playedCard != null)
+            {
+                deck.Remove(playedCard);
+                onTable.Add(playedCard);
+                return playedCard;
             }
             return null;
         }
-        private void PlayerTurn()
-        {
-            Card? playedCard = PlayerChoice();
-            if (playedCard != null)
-            {
-                PlayerDeck.Remove(playedCard);
-                onTable.Add(playedCard);
-                return;
-            }
-            PlayerDeck.Add(DrawCard());
 
-        }
-        private void aiturn()
-        {
-            AI.PlayRound();
-        }
         private void GameLoop()
         {
             FillGameDeck();
             StartGame();
-            AI = new ai(AIDeck);
-            PlayerTurn();
-            aiturn();
+            while(PlayerDeck.Count > 0 && AIDeck.Count > 0)
+            {
+                // Ide kéne majd rakni a különleges lapok akcióit
+                Card? playedByPlayer = Turn(Player.Player);
+                if (playedByPlayer != null)
+                    Console.WriteLine($"A Következő kártyát tetted le: {playedByPlayer}");
+                else
+                {
+                    PlayerDeck.Add(DrawCard());
+                    Console.WriteLine("Felhúztál egy lapot.");
+                }
+                if (AIDeck.Count > 0) {
+                    Card? playedByAi = Turn(Player.AI);
+                    if (playedByAi != null)
+                        Console.WriteLine($"Az AI a következő kártyát tette le: {playedByPlayer}");
+                    else
+                    {
+                        AIDeck.Add(DrawCard());
+                        Console.WriteLine("Az AI felhúzott egy lapot.");
+                    }
+
+                }
+            }
+            // Vége a játéknak
         }
     }
 }
