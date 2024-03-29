@@ -10,13 +10,13 @@ namespace UNO_Projekt.CardClasses
     internal class Card
     {
         public ConsoleColor Color_;
-        public int Value;
+        public int? Value;
 
         public Card(ConsoleColor color)
         {
             Color_ = color;
         }
-        public Card(ConsoleColor color, int value):this(color)
+        public Card(ConsoleColor color, int? value):this(color)
         {
             Value = value;
         }
@@ -24,6 +24,10 @@ namespace UNO_Projekt.CardClasses
         public virtual Card PlayCard()
         {
             return this;
+        }
+        public override string ToString()
+        {
+            return Value.ToString();
         }
     }
 }
