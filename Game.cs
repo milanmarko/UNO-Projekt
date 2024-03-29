@@ -21,6 +21,7 @@ namespace UNO_Projekt
         private static List<Card> Available;
         public static List<Card> GameDeck;
         public static List<Card>? onTable;
+        ai AI;
         public Game(int startCardCount)
         {
             StartCardCount = startCardCount;
@@ -67,7 +68,7 @@ namespace UNO_Projekt
             onTable.Add(Available.First());
             Available.RemoveAt(0);
             //Kene vmi ellenorzes hogy ne lehessen +4 az 1. lap
-          
+
         }
         private List<Card> GetCards(List<Card> a)
         {
@@ -101,7 +102,7 @@ namespace UNO_Projekt
             string a = "";
             foreach (var card in PlayerDeck)
             {
-                cards += card.Value + card.Color_+ i+ ", ";
+                cards += card.Value + card.Color_ + i + ", ";
             }
             cards.Remove(cards.Length - 2);
             Console.WriteLine(cards);
@@ -120,16 +121,28 @@ namespace UNO_Projekt
             return null;
         }
         private void PlayerTurn()
-        { 
-            Card playedCard = PlayerChoice();
+        {
+            Card? playedCard = PlayerChoice();
+            if (playedCard != null)
+            {
+                PlayerDeck.Remove(playedCard);
+                onTable.Add(playedCard);
+                return;
+            }
+            PlayerDeck.Add(DrawCard());
+
         }
-        private coid aiturn();
+        private void aiturn()
+        {
+            AI.PlayRound();
+        }
         private void GameLoop()
         {
             FillGameDeck();
             StartGame();
+            AI = new ai(AIDeck);
             PlayerTurn();
-            aiturn()
+            aiturn();
         }
     }
 }
