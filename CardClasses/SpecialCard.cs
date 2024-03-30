@@ -9,11 +9,11 @@ namespace UNO_Projekt.CardClasses
 {
     public enum Types
     {
-        PlusTwo = 0, PlusFour = 1, Reverse = 2, Block = 3, ColorChanger = 4,
+          Reverse = 1, PlusTwo = 2, ColorChanger = 2, Block = 3,  PlusFour = 4,
     }
     internal class SpecialCard : Card
     {
-        public static string[] SpecialCardTypes = new string[] { "+2", "+4", "Fordító", "Blokkoló", "Színkérő" };
+        public static string[] SpecialCardTypes = new string[] { "Fordító", "+2", "Színkérő",  "Blokkoló", "+4"};
         public Types Type;
         public SpecialCard(ConsoleColor color, Types type):base(color, null)
         {

@@ -26,6 +26,7 @@ namespace UNO_Projekt
         public static List<Card> GameDeck = new List<Card>();
         public static List<Card> onTable = new List<Card>();
         private bool blocked = false;
+        private int Plusses = 0;
         public Game(int startCardCount)
         {
             Console.BackgroundColor = ConsoleColor.Gray;
@@ -129,7 +130,7 @@ namespace UNO_Projekt
                 do
                 {
                     int.TryParse(Console.ReadLine(), out uInput);
-                } while (uInput > 0 && uInput < PlayerDeck.Count && !isSelectedCardPlayable(PlayerDeck[uInput - 1]));
+                } while (uInput < 1 || uInput > PlayerDeck.Count || !isSelectedCardPlayable(PlayerDeck[uInput - 1]));
                 Console.WriteLine(uInput);
                 return PlayerDeck[uInput-1];
             }
@@ -164,24 +165,48 @@ namespace UNO_Projekt
             while(PlayerDeck.Count > 0 && AIDeck.Count > 0)
             {
                 // Ide kéne majd rakni a különleges lapok akcióit
-                if (!blocked)
+                if (!blocked && Plusses == 0)
                 {
                     Card? playedByPlayer = Turn(Player.Player);
                     if (playedByPlayer != null)
+                    {
                         Console.WriteLine($"A Következő kártyát tetted le: {playedByPlayer}");
+                        if (playedByPlayer.ToString() == "Fordító" || playedByPlayer.ToString() == "Blokkoló")
+                            blocked = true;
+                        else if (playedByPlayer.ToString() == "+2" || playedByPlayer.ToString() == "+4")
+                        {
+                            blocked = true;
+                            Plusses += (int)((SpecialCard)playedByPlayer).Type;
+                        }
+                    }
+
                     else
                     {
                         PlayerDeck.Add(DrawCard());
                         Console.WriteLine("Felhúztál egy lapot.");
                     }
                 }
-                if (!blocked)
+                else
+                {
+                    blocked = false;
+                    Console.WriteLine("Kimaradtál a körből");
+                }
+                if (!blocked && Plusses == 0)
                 {
                     if (AIDeck.Count > 0)
                     {
                         Card? playedByAi = Turn(Player.AI);
                         if (playedByAi != null)
+                        {
                             Console.WriteLine($"Az AI a következő kártyát tette le: {playedByAi}");
+                            if (playedByAi.ToString() == "Fordító" || playedByAi.ToString() == "Blokkoló")
+                                blocked = true;
+                            else if (playedByAi.ToString() == "+2" || playedByAi.ToString() == "+4")
+                            {
+                                blocked = true;
+                                Plusses += (int)((SpecialCard)playedByAi).Type;
+                            }
+                        }
                         else
                         {
                             AIDeck.Add(DrawCard());
@@ -190,6 +215,12 @@ namespace UNO_Projekt
 
                     }
                 }
+                else
+                {
+                    blocked = false;
+                    Console.WriteLine("AI kimaradt a körből");
+                }
+
             }
             // Vége a játéknak
         }

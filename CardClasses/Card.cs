@@ -12,16 +12,13 @@ namespace UNO_Projekt.CardClasses
         public ConsoleColor Color_;
         public int? Value;
 
-        public Card(ConsoleColor color)
-        {
-            Color_ = color;
-        }
-        public Card(ConsoleColor color, int? value):this(color)
+        public Card(ConsoleColor color, int? value)
         {
             Value = value;
+            Color_ = color;
         }
 
-        public virtual Card PlayCard()
+        public Card PlayCard()
         {
             return this;
         }
