@@ -27,7 +27,7 @@ namespace UNO_Projekt
         public static List<Card> onTable = new List<Card>();
         private bool blocked = false;
         private int Plusses = 0;
-        public static ConsoleColor CurrentColor { get { if (onTable.Last().Color_ == ConsoleColor.Black) return onTable.Last().Color_; else return onTable.Last().Color_; } private set{ } }
+        public static ConsoleColor CurrentColor { get { if (onTable.Last().Color_ == ConsoleColor.Black) return CurrentColor; else return onTable.Last().Color_; } private set{ } }
 
         public Game(int startCardCount)
         {
