@@ -42,6 +42,16 @@ namespace UNO_Projekt
             Colors[ConsoleColor.Green] = deck.Where(x => x.Color_ == ConsoleColor.Green).ToList().Count();
             return Colors.MaxBy(x => x.Value).Key;
         }
-
+        public static Card PlayOnPlus(List<Card> deck)
+        {
+            List<Card> possible = deck.Where(x => x.Value == null).ToList().Where(y => ((SpecialCard)y).Type == Types.PlusTwo || ((SpecialCard)y).Type == Types.PlusFour).ToList();
+            Card playing = possible[r.Next(possible.Count)];
+            if (deck.Count == 2)
+            {
+                Console.WriteLine("UNO");
+            }
+            deck.Remove(playing);
+            return playing;
+        }
     }
 }

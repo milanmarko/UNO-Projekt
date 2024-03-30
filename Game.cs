@@ -27,6 +27,8 @@ namespace UNO_Projekt
         public static List<Card> onTable = new List<Card>();
         private bool blocked = false;
         private int Plusses = 0;
+        public static ConsoleColor CurrentColor { get { if (onTable.Last().Color_ == ConsoleColor.Black) return onTable.Last().Color_; else return onTable.Last().Color_; } private set{ } }
+
         public Game(int startCardCount)
         {
             Console.BackgroundColor = ConsoleColor.Gray;
@@ -78,7 +80,7 @@ namespace UNO_Projekt
         }
         private List<Card> GetCards(List<Card> a)
         {
-            a = new List<Card>(); // Initialize a new list
+            a = new List<Card>();
             for (int i = 0; i < StartCardCount; i++)
             {
                 a.Add(Available.First());
@@ -88,14 +90,14 @@ namespace UNO_Projekt
         }
         public static Card DrawCard()
         {
-            Card drawn = Available.First();
-            Available.RemoveAt(0);
+                Card drawn = Available.First();
+                Available.RemoveAt(0);
             return drawn;
         }
         private bool isPlayableOnHand(List<Card> a)
         {
             List<Card> b = possibleMoves().Intersect(a).ToList();
-            if (b.Count() > 0) return false;
+            if (b.Count() == 0) return false;
             return true;
         }
         private List<Card> possibleMoves()
@@ -117,7 +119,7 @@ namespace UNO_Projekt
             Console.Write($"\n{onTable.Last()}");
             Console.ForegroundColor = ConsoleColor.White;
             Console.Write("-ra raksz\n");
-            if (PlayerDeck.Where(x => isSelectedCardPlayable(x)).Count() > 0)
+            if (isPlayableOnHand(PlayerDeck))
             {
                 foreach (Card card in PlayerDeck)
                 {
@@ -179,11 +181,25 @@ namespace UNO_Projekt
                             Plusses += (int)((SpecialCard)playedByPlayer).Type;
                         }
                     }
-
                     else
                     {
                         PlayerDeck.Add(DrawCard());
                         Console.WriteLine("Felhúztál egy lapot.");
+                    }
+                }
+                else if (Plusses > 0)
+                {
+                    if (PlayerDeck.Where(x => x.Value == null).ToList().Where(y => ((SpecialCard)y).Type == Types.PlusTwo || ((SpecialCard)y).Type == Types.PlusFour).ToList().Count() > 0)
+                    {
+                    }
+                    else
+                    {
+                        Plusses = 0;
+                        blocked = false;
+                        for (global::System.Int32 i = 0; i < Plusses; i++)
+                        {
+                            PlayerDeck.Add(DrawCard());
+                        }
                     }
                 }
                 else
@@ -213,6 +229,23 @@ namespace UNO_Projekt
                             Console.WriteLine("Az AI felhúzott egy lapot.");
                         }
 
+                    }
+                }
+                else if (Plusses > 0)
+                {
+                    if (AIDeck.Where(x => x.Value == null).ToList().Where(y => ((SpecialCard)y).Type == Types.PlusTwo || ((SpecialCard)y).Type == Types.PlusFour).ToList().Count() > 0)
+                    {
+                        Ai.PlayOnPlus(AIDeck);
+                    }
+                    else
+                    {
+                        Plusses = 0;
+                        blocked = false;
+                        for (global::System.Int32 i = 0; i < Plusses; i++)
+                        {
+                            AIDeck.Add(DrawCard());
+                        }
+                        Console.WriteLine($"AI felhúzott {Plusses} lapot");
                     }
                 }
                 else
