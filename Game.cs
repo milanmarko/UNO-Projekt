@@ -25,6 +25,7 @@ namespace UNO_Projekt
         private static List<Card> Available = new List<Card>();
         public static List<Card> GameDeck = new List<Card>();
         public static List<Card> onTable = new List<Card>();
+        private bool blocked = false;
         public Game(int startCardCount)
         {
             Console.BackgroundColor = ConsoleColor.Gray;
@@ -154,6 +155,7 @@ namespace UNO_Projekt
             return null;
         }
 
+
         private void GameLoop()
         {
             FillGameDeck();
@@ -161,6 +163,7 @@ namespace UNO_Projekt
             while(PlayerDeck.Count > 0 && AIDeck.Count > 0)
             {
                 // Ide kéne majd rakni a különleges lapok akcióit
+                if (!blocked)
                 Card? playedByPlayer = Turn(Player.Player);
                 if (playedByPlayer != null)
                     Console.WriteLine($"A Következő kártyát tetted le: {playedByPlayer}");
@@ -172,7 +175,7 @@ namespace UNO_Projekt
                 if (AIDeck.Count > 0) {
                     Card? playedByAi = Turn(Player.AI);
                     if (playedByAi != null)
-                        Console.WriteLine($"Az AI a következő kártyát tette le: {playedByPlayer}");
+                        Console.WriteLine($"Az AI a következő kártyát tette le: {playedByAi}");
                     else
                     {
                         AIDeck.Add(DrawCard());

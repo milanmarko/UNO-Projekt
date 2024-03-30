@@ -18,7 +18,7 @@ namespace UNO_Projekt
             List<Card>possible = deck.Where(x => x.Value == TopCard.Value|| x.Color_ == TopCard.Color_ || x.Color_ == ConsoleColor.Black).ToList();
             if (possible.Count > 0)
             {
-                List<Card> numberedCards = possible.Where(x => x.Value != null).ToList(); // Ha lehet, sima kártyát játszon ki először
+                List<Card> numberedCards = possible.Where(x => x.Value != null).ToList(); // Ha lehet, sima kártyát játszon ki előszörs
                 Card playing = possible[r.Next(possible.Count)];
                 if (numberedCards.Count > 0)
                     playing = numberedCards[r.Next(numberedCards.Count)];
