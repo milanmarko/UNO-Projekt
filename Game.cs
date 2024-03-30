@@ -93,12 +93,13 @@ namespace UNO_Projekt
         }
         private bool isPlayableOnHand(List<Card> a)
         {
-            if (possibleMoves().Intersect(a).ToList().Count() == 0) return false;
+            List<Card> b = possibleMoves().Intersect(a).ToList();
+            if (b.Count() > 0) return false;
             return true;
         }
         private List<Card> possibleMoves()
         {
-            return Available.Where(x => x.Value == onTable.Last().Value || x.Color_ == onTable.Last().Color_ || x.Color_ == ConsoleColor.Black).ToList();
+            return Available.Where(x => x.ToString() == onTable.Last().ToString() || x.Color_ == onTable.Last().Color_ || x.Color_ == ConsoleColor.Black).ToList();
         }
         private bool isSelectedCardPlayable(Card card)
         {
@@ -128,7 +129,7 @@ namespace UNO_Projekt
                 do
                 {
                     int.TryParse(Console.ReadLine(), out uInput);
-                } while (uInput > 0 && uInput < PlayerDeck.Count + 1 && !isSelectedCardPlayable(PlayerDeck[uInput - 1]));
+                } while (uInput > 0 && uInput < PlayerDeck.Count && !isSelectedCardPlayable(PlayerDeck[uInput - 1]));
                 Console.WriteLine(uInput);
                 return PlayerDeck[uInput-1];
             }
@@ -164,24 +165,30 @@ namespace UNO_Projekt
             {
                 // Ide kéne majd rakni a különleges lapok akcióit
                 if (!blocked)
-                Card? playedByPlayer = Turn(Player.Player);
-                if (playedByPlayer != null)
-                    Console.WriteLine($"A Következő kártyát tetted le: {playedByPlayer}");
-                else
                 {
-                    PlayerDeck.Add(DrawCard());
-                    Console.WriteLine("Felhúztál egy lapot.");
-                }
-                if (AIDeck.Count > 0) {
-                    Card? playedByAi = Turn(Player.AI);
-                    if (playedByAi != null)
-                        Console.WriteLine($"Az AI a következő kártyát tette le: {playedByAi}");
+                    Card? playedByPlayer = Turn(Player.Player);
+                    if (playedByPlayer != null)
+                        Console.WriteLine($"A Következő kártyát tetted le: {playedByPlayer}");
                     else
                     {
-                        AIDeck.Add(DrawCard());
-                        Console.WriteLine("Az AI felhúzott egy lapot.");
+                        PlayerDeck.Add(DrawCard());
+                        Console.WriteLine("Felhúztál egy lapot.");
                     }
+                }
+                if (!blocked)
+                {
+                    if (AIDeck.Count > 0)
+                    {
+                        Card? playedByAi = Turn(Player.AI);
+                        if (playedByAi != null)
+                            Console.WriteLine($"Az AI a következő kártyát tette le: {playedByAi}");
+                        else
+                        {
+                            AIDeck.Add(DrawCard());
+                            Console.WriteLine("Az AI felhúzott egy lapot.");
+                        }
 
+                    }
                 }
             }
             // Vége a játéknak

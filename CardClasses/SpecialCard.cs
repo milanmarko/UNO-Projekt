@@ -22,22 +22,6 @@ namespace UNO_Projekt.CardClasses
             Color_ = color;
         }
 
-        public override (Card,Types) PlayCard()
-        {
-            switch (Type) 
-            {
-                case Types.PlusTwo:
-                    break;
-                case Types.PlusFour:
-                    break;
-                case Types.Reverse:
-                    break;
-                case Types.Block:
-                    break;
-                case Types.ColorChanger:
-                    break;
-            }
-        }
         public override string ToString()
         {
             return SpecialCardTypes[(int)Type];
