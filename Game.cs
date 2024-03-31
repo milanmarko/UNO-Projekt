@@ -21,7 +21,6 @@ namespace UNO_Projekt
         private static Random r = new Random();
         private List<Card> PlayerDeck;
         private List<Card> AIDeck;
-        private static List<Card> Possible;
         private static List<Card> Available = new List<Card>();
         public static List<Card> GameDeck = new List<Card>();
         public static List<Card> onTable = new List<Card>();
@@ -90,8 +89,18 @@ namespace UNO_Projekt
         }
         public static Card DrawCard()
         {
-                Card drawn = Available.First();
-                Available.RemoveAt(0);
+
+            if (Available.Count() == 0)
+            {
+                Card Last = onTable.Last();
+                onTable.RemoveAt(onTable.Count - 1);
+                Shuffler.Shuffle(onTable);
+                Available.AddRange(onTable);
+                onTable.Clear();
+                onTable.Add(Last);
+            }
+            Card drawn = Available.First();
+            Available.RemoveAt(0);
             return drawn;
         }
         private bool isPlayableOnHand(List<Card> a)
@@ -106,7 +115,43 @@ namespace UNO_Projekt
         }
         private bool isSelectedCardPlayable(Card card)
         {
-            return (card.Color_ == onTable.Last().Color_ || card.ToString() == onTable.Last().ToString() || card.Color_ == ConsoleColor.Black);
+            return (card.Color_ == CurrentColor|| card.ToString() == onTable.Last().ToString() || card.Color_ == ConsoleColor.Black);
+        }
+        private bool isSelectedPlusPlayable(Card card)
+        {
+            return (card.Color_ == CurrentColor&&  card.ToString() == "+2" || card.Color_ == ConsoleColor.Black && card.ToString() == "+4");
+        }
+        private Card? PlayerPLusChoice()
+        {
+            //Console.WriteLine($"DEBUG");
+            //foreach (Card card in PlayerDeck)
+            //{
+            //    Console.Write(card);
+            //}
+            Console.ForegroundColor = CurrentColor;
+            Console.Write($"\n{onTable.Last()}");
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write("-ra raksz\n");
+            if (PlayerDeck.Where(x => isSelectedPlusPlayable(x)).Count() > 0)
+            {
+                foreach (Card card in PlayerDeck.Where(x => (x.Color_ == CurrentColor && x.ToString() == "+2") ||( x.Color_ == ConsoleColor.Black && x.ToString() == "+4")).ToList())
+                {
+                    Console.ForegroundColor = card.Color_;
+                    Console.Write($"{card}, ");
+                }
+                Console.ForegroundColor = ConsoleColor.Black;
+                Console.WriteLine("\nÍrd be annak a lapnak a sorszámát, amit le szeretnél rakni!");
+                int uInput;
+                do
+                {
+                    int.TryParse(Console.ReadLine(), out uInput);
+                } while (uInput < 1 || uInput > PlayerDeck.Count || !isSelectedCardPlayable(PlayerDeck[uInput - 1]));
+                Console.WriteLine(uInput);
+                return (PlayerDeck.Where(x => (x.Color_ == CurrentColor && x.ToString() == "+2") || (x.Color_ == ConsoleColor.Black && x.ToString() == "+4")).ToList())[uInput-1];
+            }
+            else
+                return null;
+
         }
         private Card? PlayerChoice()
         {
@@ -115,11 +160,11 @@ namespace UNO_Projekt
             //{
             //    Console.Write(card);
             //}
-            Console.ForegroundColor = onTable.Last().Color_;
+            Console.ForegroundColor = CurrentColor;
             Console.Write($"\n{onTable.Last()}");
             Console.ForegroundColor = ConsoleColor.White;
             Console.Write("-ra raksz\n");
-            if (isPlayableOnHand(PlayerDeck))
+            if (PlayerDeck.Where(x => isSelectedCardPlayable(x)).Count() > 0)
             {
                 foreach (Card card in PlayerDeck)
                 {
@@ -134,20 +179,25 @@ namespace UNO_Projekt
                     int.TryParse(Console.ReadLine(), out uInput);
                 } while (uInput < 1 || uInput > PlayerDeck.Count || !isSelectedCardPlayable(PlayerDeck[uInput - 1]));
                 Console.WriteLine(uInput);
-                return PlayerDeck[uInput-1];
+                return PlayerDeck[uInput - 1];
             }
             else
                 return null;
 
         }
 
-        private Card? Turn(Player player)
+        private Card? Turn(Player player, bool plusses = false)
         {
             Card? playedCard = Ai.PlayRound(AIDeck);
             List<Card> deck = AIDeck;
-            if (player == Player.Player)
+            if (player == Player.Player && plusses == false)
             {
                 playedCard = PlayerChoice();
+                deck = PlayerDeck;
+            }
+            else if(player == Player.Player && plusses == true)  
+            {
+                playedCard = PlayerPLusChoice();
                 deck = PlayerDeck;
             }
             if (playedCard != null)
@@ -187,19 +237,22 @@ namespace UNO_Projekt
                         Console.WriteLine("Felhúztál egy lapot.");
                     }
                 }
-                else if (Plusses > 0)
+                else if (Plusses > 0 && blocked == true)
                 {
                     if (PlayerDeck.Where(x => x.Value == null).ToList().Where(y => ((SpecialCard)y).Type == Types.PlusTwo || ((SpecialCard)y).Type == Types.PlusFour).ToList().Count() > 0)
                     {
+                        Turn(Player.Player, true);
                     }
                     else
                     {
-                        Plusses = 0;
                         blocked = false;
-                        for (global::System.Int32 i = 0; i < Plusses; i++)
+                        for (int i = 0; i < Plusses; i++)
                         {
                             PlayerDeck.Add(DrawCard());
                         }
+                        Plusses = 0;
+                        Console.WriteLine($"Felhúztál {Plusses} lapot");
+
                     }
                 }
                 else
@@ -239,12 +292,12 @@ namespace UNO_Projekt
                     }
                     else
                     {
-                        Plusses = 0;
                         blocked = false;
                         for (global::System.Int32 i = 0; i < Plusses; i++)
                         {
                             AIDeck.Add(DrawCard());
                         }
+                        Plusses = 0;
                         Console.WriteLine($"AI felhúzott {Plusses} lapot");
                     }
                 }
