@@ -32,7 +32,7 @@ namespace UNO_Projekt
             deck.Add(Game.DrawCard());
             return null;
         }
-        public ConsoleColor ColorMax(List<Card> deck)
+        public static ConsoleColor ColorMax(List<Card> deck)
         {
             Dictionary<ConsoleColor, int> Colors = new Dictionary<ConsoleColor, int>()
             { [ConsoleColor.Blue] = 0, [ConsoleColor.Red] = 0, [ConsoleColor.Yellow] = 0, [ConsoleColor.Green] = 0};
