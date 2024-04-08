@@ -169,11 +169,11 @@ namespace UNO_Projekt
                 return null;
 
         }
-        private bool WhoWon()
-        { 
-            if(AIDeck.Count() == 0)
-            { return false; }
-            return true;
+        private Player WhoWon()
+        {
+            if (AIDeck.Count == 0)
+                return Player.AI;
+            return Player.Player;
         }
         private Card? PlayerChoice()
         {
@@ -182,6 +182,8 @@ namespace UNO_Projekt
             //{
             //    Console.Write(card);
             //}
+            Console.Clear();
+            //Thread.Sleep(500);
             Console.ForegroundColor = CurrentColor;
             Console.Write($"\n{onTable.Last()}");
             Console.ForegroundColor = ConsoleColor.White;
@@ -227,16 +229,17 @@ namespace UNO_Projekt
                 playedCard = PlayerPLusChoice();
                 deck = PlayerDeck;
             }
-            if (playedCard != null)
-            {
-                deck.Remove(playedCard);
-                onTable.Add(playedCard);
+            //if (playedCard != null)
+            //{
+                //deck.Remove(playedCard);
+                //onTable.Add(playedCard);
                 return playedCard;
-            }
-            return null;
+            //}
+            //return null;
         }
-        private ConsoleColor colorchange() 
+        private ConsoleColor ColorChange() 
         {
+            //Thread.Sleep(500);
             Console.WriteLine("Jelenlegi lapjaid:");
             foreach (Card card in PlayerDeck)
             {
@@ -258,12 +261,33 @@ namespace UNO_Projekt
             Console.WriteLine(uInput);
             return __colors[uInput - 1];
         }
+        private void HandleSpecialCards(Card _card, bool isAutomated = false)
+        {
+            if (_card.Value == null)
+            {
+                SpecialCard card = (SpecialCard)_card;
+                if (card.Type == Types.Reverse || card.Type == Types.Block)
+                    blocked = true;
+                else if (card.Type == Types.PlusTwo || card.Type == Types.PlusFour)
+                {
+                    blocked = true;
+                    Plusses += (int)card.Type;
+                }
+                if (card.Type == Types.ColorChanger || card.Type == Types.PlusFour)
+                {
+                    currentColor = isAutomated?Ai.ColorMax(AIDeck) : ColorChange();
+                }
 
+            }
+        }
 
         private string GameLoop()
         {
             FillGameDeck();
             StartGame();
+            Console.ForegroundColor = ConsoleColor.DarkGreen;
+            Console.WriteLine(AIDeck.Count);
+            Console.ReadKey();
             string whoWon = null;
             while(PlayerDeck.Count > 0 && AIDeck.Count > 0)
             {
@@ -273,21 +297,13 @@ namespace UNO_Projekt
                     Card? playedByPlayer = Turn(Player.Player);
                     if (playedByPlayer != null)
                     {
+                        PlayerDeck.Remove(playedByPlayer);
+                        onTable.Add(playedByPlayer);
                         Console.Write($"A Következő kártyát tetted le: ");
                         Console.ForegroundColor = playedByPlayer.Color_;
                         Console.Write($"{playedByPlayer} \n");
                         Console.ForegroundColor = ConsoleColor.Black;
-                        if (playedByPlayer.ToString() == "Fordító" || playedByPlayer.ToString() == "Blokkoló")
-                            blocked = true;
-                        else if (playedByPlayer.ToString() == "+2" || playedByPlayer.ToString() == "+4")
-                        {
-                            blocked = true;
-                            Plusses += (int)((SpecialCard)playedByPlayer).Type;
-                        }
-                        if (playedByPlayer.ToString() == "+4" || playedByPlayer.ToString() == "Színkérő")
-                        {
-                            currentColor = colorchange();
-                        }
+                        HandleSpecialCards(playedByPlayer);      
                     }
                     else
                     {
@@ -297,10 +313,11 @@ namespace UNO_Projekt
                 }
                 else if (Plusses > 0 && blocked == true)
                 {
-                    if (PlayerDeck.Where(x => x.Value == null).ToList().Where(y => ((SpecialCard)y).Type == Types.PlusTwo || ((SpecialCard)y).Type == Types.PlusFour).ToList().Count() > 0)
+                    if (PlayerDeck.Where(x => x.Value == null).Where(y => ((SpecialCard)y).Type == Types.PlusTwo || ((SpecialCard)y).Type == Types.PlusFour).Count() > 0)
                     {
-                        Turn(Player.Player, true);
-                        Plusses += (int)((SpecialCard)onTable.Last()).Value;
+                        Card playedByPlayer = Turn(Player.Player, true);
+                        onTable.Add(playedByPlayer);
+                        Plusses += (int)((SpecialCard)(onTable.Last())).Type;
                     }
                     else
                     {
@@ -322,6 +339,7 @@ namespace UNO_Projekt
                 {
                     Console.Write(item + ",");
                 }
+                Console.Write($"({AIDeck.Count})");
                 if (!blocked && Plusses == 0)
                 {
                     if (AIDeck.Count > 0)
@@ -329,40 +347,38 @@ namespace UNO_Projekt
                         Card? playedByAi = Turn(Player.AI);
                         if (playedByAi != null)
                         {
+                            Thread.Sleep(500);
+                            AIDeck.Remove(playedByAi);
+                            onTable.Add(playedByAi);
                             Console.WriteLine($"Az AI a következő kártyát tette le: {playedByAi}");
-                            if (playedByAi.ToString() == "Fordító" || playedByAi.ToString() == "Blokkoló")
-                                blocked = true;
-                            else if (playedByAi.ToString() == "+2" || playedByAi.ToString() == "+4")
-                            {
-                                blocked = true;
-                                Plusses += (int)((SpecialCard)playedByAi).Type;
-                            }
-                            if (playedByAi.ToString() == "Színkérő" || playedByAi.ToString() == "+4")
-                            {
-                                currentColor = Ai.ColorMax(AIDeck);
-                            }
+                            HandleSpecialCards(playedByAi, true);
                         }
                         else
                         {
                             AIDeck.Add(DrawCard());
-                            Console.WriteLine("Az AI felhúzott egy lapot.");
+                            Console.WriteLine($"Az AI felhúzott egy lapot. {Plusses}");
                         }
+                        Console.ReadKey();
 
                     }
                 }
-                else if (Plusses > 0 && blocked == true)
+                else if (Plusses > 0 && blocked)
                 {
-                    if (AIDeck.Where(x => x.Value == null).ToList().Where(y => ((SpecialCard)y).Type == Types.PlusTwo || ((SpecialCard)y).Type == Types.PlusFour).ToList().Count() > 0)
+                    if (AIDeck.Where(x => x.Value == null).Where(y => ((SpecialCard)y).Type == Types.PlusTwo || ((SpecialCard)y).Type == Types.PlusFour).Count() > 0)
                     {
-                        Ai.PlayOnPlus(AIDeck);
+                        SpecialCard playedByAi = (SpecialCard)Ai.PlayOnPlus(AIDeck);
+                        onTable.Add(playedByAi);
+                        if (onTable.Last().Color_ == ConsoleColor.Black)
+                            CurrentColor = Ai.ColorMax(AIDeck);
+                        Console.WriteLine($"Az AI a következő kártyát tette le: {playedByAi}");
+
+                        Plusses += (int)((SpecialCard)onTable.Last()).Type;
                     }
                     else
                     {
                         blocked = false;
-                        for (global::System.Int32 i = 0; i < Plusses; i++)
-                        {
+                        for (int i = 0; i < Plusses; i++)
                             AIDeck.Add(DrawCard());
-                        }
                         Console.WriteLine($"AI felhúzott {Plusses} lapot és kimaradt egy körből");
                         Plusses = 0;
                     }
@@ -374,7 +390,7 @@ namespace UNO_Projekt
                 }
             }
             // Vége a játéknak
-            return WhoWon()?  "Gratulálunk nyertél" : "Az AI nyert";
+            return WhoWon() == Player.Player?  "Gratulálunk nyertél" : "Az AI nyert";
         }
     }
 }

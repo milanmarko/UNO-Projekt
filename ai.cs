@@ -26,7 +26,7 @@ namespace UNO_Projekt
                 {
                     Console.WriteLine("UNO");
                 }
-                deck.Remove(playing);
+                //deck.Remove(playing);
                 return playing;
             }
             deck.Add(Game.DrawCard());
