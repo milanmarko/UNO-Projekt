@@ -38,22 +38,30 @@ namespace UNO_Projekt
             if (Game.Plusses > 0)
                 Console.WriteLine($"Ha nem tudsz rakni, {Game.Plusses} db lapot húzol fel!");
 
-            foreach (Card card in Deck)
-            {
-                Console.ForegroundColor = card.Color_;
-                Console.Write($"{card}, ");
-            }
-            Console.ForegroundColor = ConsoleColor.Black;
-            Console.WriteLine("\nÍrd be annak a lapnak a sorszámát, amit le szeretnél rakni! Írj 0-t ha húzni szeretnél");
-            int uInput = -1;
+            //;
+            //foreach (Card card in Deck)
+            //{
+            //    Console.ForegroundColor = card.Color_;
+            //    Console.Write($"{card}, ");
+            //}
+            //Console.ForegroundColor = ConsoleColor.Black;
+            //Console.WriteLine("\nÍrd be annak a lapnak a sorszámát, amit le szeretnél rakni! Írj 0-t ha húzni szeretnél");
+            //int uInput = -1;
+            //do
+            //{
+            //    string a = Console.ReadLine();
+            //    if (a == "0") return null;
+            //    int.TryParse(a, out uInput);
+            //} while (uInput < 1 || uInput > Deck.Count || !isSelectedCardPlayable(Deck[uInput - 1]) || (Game.Plusses > 0 && !isSelectedPlusPlayable(Deck[uInput -1])));
+            //Console.WriteLine(uInput);
+            int? uInput = null;
             do
             {
-                string a = Console.ReadLine();
-                if (a == "0") return null;
-                int.TryParse(a, out uInput);
-            } while (uInput < 1 || uInput > Deck.Count || !isSelectedCardPlayable(Deck[uInput - 1]) || (Game.Plusses > 0 && !isSelectedPlusPlayable(Deck[uInput -1])));
-            //Console.WriteLine(uInput);
-            Card play = Deck[uInput - 1];
+                uInput = Menu.PrintCardSelect(Deck.ToArray());
+                if ((Action)uInput == Action.Draw)
+                    return null;
+            } while(!isSelectedCardPlayable(Deck[uInput ?? 0]) || (Game.Plusses > 0 && !isSelectedPlusPlayable(Deck[uInput ?? 0])));
+            Card play = Deck[uInput ?? 0];
             Deck.Remove(play);
             return play;
         }
