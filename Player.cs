@@ -57,7 +57,7 @@ namespace UNO_Projekt
             int? uInput = null;
             do
             {
-                uInput = Menu.PrintCardSelect(Deck.ToArray());
+                uInput = Menu.PrintCardSelect(Deck.ToArray(), Name);
                 if ((Action)uInput == Action.Draw)
                     return null;
             } while(!isSelectedCardPlayable(Deck[uInput ?? 0]) || (Game.Plusses > 0 && !isSelectedPlusPlayable(Deck[uInput ?? 0])));

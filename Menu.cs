@@ -99,12 +99,13 @@ namespace UNO_Projekt
                 }
             }
         }
-        public static int PrintCardSelect(Card[] cardArray)
+        public static int PrintCardSelect(Card[] cardArray, string plyname)
         {
             int currentSelected = 0;
             while (true)
             {
                 Console.Clear();
+                Console.WriteLine($"{plyname} köre jön.");
                 PrintPlayerHeadline();
                 Console.WriteLine("Írj egy 0-t ha fel szeretnél húzni");
                 currentSelected = currentSelected > cardArray.Length -1 ? 0 : currentSelected;
