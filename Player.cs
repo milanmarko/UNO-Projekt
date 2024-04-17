@@ -37,23 +37,6 @@ namespace UNO_Projekt
             Console.Write("-ra raksz\n");
             if (Game.Plusses > 0)
                 Console.WriteLine($"Ha nem tudsz rakni, {Game.Plusses} db lapot húzol fel!");
-
-            //;
-            //foreach (Card card in Deck)
-            //{
-            //    Console.ForegroundColor = card.Color_;
-            //    Console.Write($"{card}, ");
-            //}
-            //Console.ForegroundColor = ConsoleColor.Black;
-            //Console.WriteLine("\nÍrd be annak a lapnak a sorszámát, amit le szeretnél rakni! Írj 0-t ha húzni szeretnél");
-            //int uInput = -1;
-            //do
-            //{
-            //    string a = Console.ReadLine();
-            //    if (a == "0") return null;
-            //    int.TryParse(a, out uInput);
-            //} while (uInput < 1 || uInput > Deck.Count || !isSelectedCardPlayable(Deck[uInput - 1]) || (Game.Plusses > 0 && !isSelectedPlusPlayable(Deck[uInput -1])));
-            //Console.WriteLine(uInput);
             int? uInput = null;
             do
             {
@@ -79,15 +62,7 @@ namespace UNO_Projekt
                 Console.ForegroundColor = card.Color_;
                 Console.Write($"{card}, ");
             }
-            //foreach (ConsoleColor color in Game.__colors)
-            //{
-            //    Console.ForegroundColor = color;
-            //    Console.Write($"\n {string.Join(",", color)}");
-            //}
-            //Console.ForegroundColor = ConsoleColor.Black;
-            //Console.WriteLine("\nÍrd be annak a színnek a sorszámát, amit le szeretnél rakni!");
             int uInput = Menu.PrintColorChanger();
-            //Console.WriteLine(uInput);
             return Game.__colors[uInput];
         }
         public override string ToString()
