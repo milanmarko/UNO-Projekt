@@ -19,6 +19,7 @@ namespace UNO_Projekt
         private int PlayerCount;
         private int AICount;
         private int StartCardCount;
+        private string[] PlayerNames;
         private List<PlayerObj> Players = new List<PlayerObj>();
         private static Random r = new Random();
         private static List<Card> Available = new List<Card>();
@@ -31,13 +32,14 @@ namespace UNO_Projekt
         private static ConsoleColor currentColor = ConsoleColor.White;
         public static ConsoleColor CurrentColor { get { if (TopCard.Color_ == ConsoleColor.Black) return currentColor; else return TopCard.Color_; } private set{ } }
         public static Card TopCard { get => onTable.Last(); }
-        public Game(int startCardCount, int aicount, int playercount)
+        public Game(int startCardCount, int aicount, int playercount, string[] playerNames)
         {
             AICount = aicount;
             PlayerCount = playercount;
+            PlayerNames = playerNames;
             Console.BackgroundColor = ConsoleColor.Gray;
             StartCardCount = startCardCount;
-            GameLoop();
+            //GameLoop();
         }
 
         private void FillGameDeck()
@@ -64,7 +66,7 @@ namespace UNO_Projekt
                 }
                 else
                 {
-                    for (global::System.Int32 i = 0; i < 4; i++)
+                    for (int i = 0; i < 4; i++)
                     {
                         GameDeck.Add(new SpecialCard(ConsoleColor.Black, type));
                     }
@@ -80,7 +82,7 @@ namespace UNO_Projekt
         {
             Shuffler.Shuffle(Available);
             for (int i = 0; i < PlayerCount; i++)
-                Players.Add(new PlayerObj(GetCards(), "Debug"));
+                Players.Add(new PlayerObj(GetCards(), PlayerNames[i]));
             for (int i = 0; i < AICount; i++)
                 Players.Add(new Ai(GetCards()));
             Shuffler.Shuffle(Available);
@@ -156,7 +158,7 @@ namespace UNO_Projekt
         }
 
 
-        private string GameLoop()
+        public string GameLoop()
         {
             FillGameDeck();
             StartGame();
@@ -165,6 +167,7 @@ namespace UNO_Projekt
                 // Ide kéne majd rakni a különleges lapok akcióit
                 for(int i = 0; i < Players.Count; i += Reversed ? -1 : 1)
                 {
+                    if (i < 0 ) i = 0;
                     PlayerObj ply = Players[i];
                     Console.Clear();
                     Console.WriteLine($"Következő játékos: {ply}");

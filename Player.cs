@@ -79,20 +79,16 @@ namespace UNO_Projekt
                 Console.ForegroundColor = card.Color_;
                 Console.Write($"{card}, ");
             }
-            foreach (ConsoleColor color in Game.__colors)
-            {
-                Console.ForegroundColor = color;
-                Console.Write($"\n {string.Join(",", color)}");
-            }
-            Console.ForegroundColor = ConsoleColor.Black;
-            Console.WriteLine("\nÍrd be annak a színnek a sorszámát, amit le szeretnél rakni!");
-            int uInput;
-            do
-            {
-                int.TryParse(Console.ReadLine(), out uInput);
-            } while (uInput < 1 || uInput > Game.__colors.Length);
-            Console.WriteLine(uInput);
-            return Game.__colors[uInput - 1];
+            //foreach (ConsoleColor color in Game.__colors)
+            //{
+            //    Console.ForegroundColor = color;
+            //    Console.Write($"\n {string.Join(",", color)}");
+            //}
+            //Console.ForegroundColor = ConsoleColor.Black;
+            //Console.WriteLine("\nÍrd be annak a színnek a sorszámát, amit le szeretnél rakni!");
+            int uInput = Menu.PrintColorChanger();
+            //Console.WriteLine(uInput);
+            return Game.__colors[uInput];
         }
         public override string ToString()
         {

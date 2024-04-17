@@ -16,7 +16,10 @@ namespace UNO_Projekt
         static Random r = new Random();
         public static Card? TopCard { get { return Game.onTable.Last(); } }
 
-        public Ai(List<Card> DeckGivenByGameMaster):base(DeckGivenByGameMaster, $"{AiNames[ID++]} (AI)") { }
+        public Ai(List<Card> DeckGivenByGameMaster):base(DeckGivenByGameMaster, $"{AiNames[ID++]} (AI)")
+        {
+            if (ID > AiNames.Length - 1) ID = 0;
+        }
         public override Card? PlayRound()
         {
             List<Card>possible = Deck.Where(x => x.ToString() == TopCard.ToString()|| x.Color_ == TopCard.Color_ || x.Color_ == ConsoleColor.Black).ToList();
